@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import fr.farmeurimmo.farmeurimmovelocity.Velocity;
+import fr.farmeurimmo.users.UsersManager;
 import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
@@ -29,17 +30,17 @@ public class PlayerListener {
             i++;
         }
 
-        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l1.20.1+\n§6§lTest server for plugins.");
+        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l1.20.2+\n§6§lTest server for plugins.");
 
         ServerPing.Players players = new ServerPing.Players(Velocity.INSTANCE.getPlayerCount(), 0, samplePlayers);
 
-        ServerPing.Version version = new ServerPing.Version(763, "§c§lFarmeurimmo §8| §a1.20.1+");
+        ServerPing.Version version = new ServerPing.Version(764, "§c§lFarmeurimmo §8| §a1.20.2+");
 
         e.setPing(new ServerPing(version, players, description, e.getPing().getFavicon().orElse(null)));
 
         e.getConnection().getVirtualHost().ifPresent(virtualHost -> {
             if (!virtualHost.getHostName().equalsIgnoreCase("mc.farmeurimmo.fr")) {
-                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l1.20.1+"),
+                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l1.20.2+"),
                         null, Component.text("§c§lPlease join from mc.farmeurimmo.fr"), null));
             }
         });
@@ -56,13 +57,25 @@ public class PlayerListener {
 
     @Subscribe
     public void onLogin(LoginEvent e) {
-        Player player = e.getPlayer();
+        Player p = e.getPlayer();
 
-        if (!player.hasPermission("farmeurimmo.maintenance")) {
+        if (!p.hasPermission("farmeurimmo.maintenance")) {
             e.setResult(ResultedEvent.ComponentResult.denied(Component.text(
                     "§c§lYou are not allowed to join this server.\n§cAccess is temporarily restricted.")));
             return;
         }
+
+        long start = System.currentTimeMillis();
+
+        UsersManager.getUserOrCreate(p.getUniqueId(), p.getUsername()).thenAccept(usr -> {
+            p.sendMessage(Component.text("§aWelcome back, §e" + p.getUsername() + "§a! §7(Took " + (System.currentTimeMillis() - start) + "ms)"));
+
+            //TODO: nick
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            p.disconnect(Component.text("§c§lAn error occurred while loading your data.\n§cPlease try again later."));
+            return null;
+        });
     }
 
 }

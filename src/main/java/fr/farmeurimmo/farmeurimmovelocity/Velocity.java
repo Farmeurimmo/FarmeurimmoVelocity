@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.util.GameProfile;
 import fr.farmeurimmo.farmeurimmovelocity.listeners.PlayerListener;
 import org.slf4j.Logger;
 
@@ -42,5 +43,13 @@ public class Velocity {
 
     public ArrayList<Player> getOnlinePlayers() {
         return new ArrayList<>(proxyServer.getAllPlayers());
+    }
+
+    public void setDisplayName(Player p, String displayName) {
+        GameProfile gp = p.getGameProfile();
+        //set player's display name
+        gp = gp.withName(displayName);
+        //update player's game profile
+        p.setGameProfileProperties(gp.getProperties());
     }
 }
