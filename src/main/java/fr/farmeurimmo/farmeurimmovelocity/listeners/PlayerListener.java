@@ -65,11 +65,7 @@ public class PlayerListener {
             return;
         }
 
-        long start = System.currentTimeMillis();
-
         UsersManager.getUserOrCreate(p.getUniqueId(), p.getUsername()).thenAccept(usr -> {
-            p.sendMessage(Component.text("§aWelcome back, §e" + p.getUsername() + "§a! §7(Took " + (System.currentTimeMillis() - start) + "ms)"));
-
             //TODO: nick
         }).exceptionally(ex -> {
             ex.printStackTrace();
