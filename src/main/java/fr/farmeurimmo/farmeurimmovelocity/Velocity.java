@@ -6,7 +6,9 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
+import fr.farmeurimmo.farmeurimmovelocity.cmds.HubCmd;
 import fr.farmeurimmo.farmeurimmovelocity.listeners.PlayerListener;
 import org.slf4j.Logger;
 
@@ -35,6 +37,20 @@ public class Velocity {
     public void onProxyInitialization(ProxyInitializeEvent e) {
         logger.info("Registering listeners...");
         proxyServer.getEventManager().register(this, new PlayerListener());
+
+        logger.info("Registering commands...");
+        proxyServer.getCommandManager().register("hub", new HubCmd(), "lobby");
+
+        logger.info("Plugin loaded.");
+    }
+
+    public RegisteredServer getAHub() {
+        for (RegisteredServer server : proxyServer.getAllServers()) {
+            if (server.getServerInfo().getName().startsWith("hub")) {
+                return server;
+            }
+        }
+        return null;
     }
 
     public int getPlayerCount() {
