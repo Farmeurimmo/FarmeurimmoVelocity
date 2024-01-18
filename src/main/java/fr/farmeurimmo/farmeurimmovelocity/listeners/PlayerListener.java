@@ -30,17 +30,19 @@ public class PlayerListener {
             i++;
         }
 
-        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l1.20.2+\n§6§lTest server for plugins.");
+        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l1.20.4+\n§6§lTest server for plugins.");
 
         ServerPing.Players players = new ServerPing.Players(Velocity.INSTANCE.getPlayerCount(), 0, samplePlayers);
 
-        ServerPing.Version version = new ServerPing.Version(764, "§c§lFarmeurimmo §8| §a1.20.2+");
+        int versionProtocol = e.getPing().getVersion().getProtocol();
+        if (versionProtocol < 765) versionProtocol = 765;
+        ServerPing.Version version = new ServerPing.Version(versionProtocol, "§c§lFarmeurimmo §8| §a1.20.4+");
 
         e.setPing(new ServerPing(version, players, description, e.getPing().getFavicon().orElse(null)));
 
         e.getConnection().getVirtualHost().ifPresent(virtualHost -> {
             if (!virtualHost.getHostName().equalsIgnoreCase("mc.farmeurimmo.fr")) {
-                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l1.20.2+"),
+                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l1.20.4+"),
                         null, Component.text("§c§lPlease join from mc.farmeurimmo.fr"), null));
             }
         });
