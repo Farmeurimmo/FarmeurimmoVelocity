@@ -7,7 +7,7 @@ import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerPing;
-import fr.farmeurimmo.farmeurimmovelocity.Velocity;
+import fr.farmeurimmo.farmeurimmovelocity.VelocityPlugin;
 import fr.farmeurimmo.users.UsersManager;
 import net.kyori.adventure.text.Component;
 
@@ -22,7 +22,7 @@ public class PlayerListener {
         samplePlayers.add(new ServerPing.SamplePlayer("§dA project/problem ?", UUID.fromString("00000000-0000-0000-0000-000000000000")));
         samplePlayers.add(new ServerPing.SamplePlayer("§c→ §6contact@farmeurimmo.fr", UUID.fromString("00000000-0000-0000-0000-000000000000")));
         samplePlayers.add(new ServerPing.SamplePlayer("§e-- Player(s) online --", UUID.fromString("00000000-0000-0000-0000-000000000000")));
-        ArrayList<Player> onlinePlayers = Velocity.INSTANCE.getOnlinePlayers();
+        ArrayList<Player> onlinePlayers = VelocityPlugin.INSTANCE.getOnlinePlayers();
         int i = 0;
         for (Player player : onlinePlayers) {
             if (i > 4) return;
@@ -30,19 +30,20 @@ public class PlayerListener {
             i++;
         }
 
-        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l1.21+\n§6§lTest server for plugins.");
+        Component description = Component.text("§c§lNetwork of Farmeurimmo §8§l| §a§l" + VelocityPlugin.PROTOCOL_NAME +
+                "\n§6§lTest server for plugins.");
 
-        ServerPing.Players players = new ServerPing.Players(Velocity.INSTANCE.getPlayerCount(), 0, samplePlayers);
+        ServerPing.Players players = new ServerPing.Players(VelocityPlugin.INSTANCE.getPlayerCount(), 0, samplePlayers);
 
         int versionProtocol = e.getPing().getVersion().getProtocol();
-        if (versionProtocol < 767) versionProtocol = 767;
-        ServerPing.Version version = new ServerPing.Version(versionProtocol, "§c§lFarmeurimmo §8| §a1.21+");
+        if (versionProtocol < VelocityPlugin.MIN_PROTOCOL_VERSION) versionProtocol = VelocityPlugin.MIN_PROTOCOL_VERSION;
+        ServerPing.Version version = new ServerPing.Version(versionProtocol, "§c§lFarmeurimmo §8| §a" + VelocityPlugin.PROTOCOL_NAME);
 
         e.setPing(new ServerPing(version, players, description, e.getPing().getFavicon().orElse(null)));
 
         e.getConnection().getVirtualHost().ifPresent(virtualHost -> {
             if (!virtualHost.getHostName().equalsIgnoreCase("mc.farmeurimmo.fr")) {
-                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l1.21+"),
+                e.setPing(new ServerPing(new ServerPing.Version(999, "§c§l" + VelocityPlugin.PROTOCOL_NAME),
                         null, Component.text("§c§lPlease join from mc.farmeurimmo.fr"), null));
             }
         });

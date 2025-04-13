@@ -1,6 +1,7 @@
 package fr.farmeurimmo.farmeurimmovelocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
@@ -17,16 +18,24 @@ import java.util.ArrayList;
 @Plugin(
         id = "farmeurimmovelocity",
         name = "FarmeurimmoVelocity",
-        version = "1.0.0-SNAPSHOT"
+        version = "1.0.1-SNAPSHOT",
+        authors = {
+                "Farmeurimmo"
+        },
+        description = "Farmeurimmo Velocity plugin for mc.farmeurimmo.fr",
+        url = "https://farmeurimmo.fr"
 )
-public class Velocity {
+public class VelocityPlugin {
 
-    public static Velocity INSTANCE;
+    public static VelocityPlugin INSTANCE;
     private final Logger logger;
     private final ProxyServer proxyServer;
 
+    public static final int MIN_PROTOCOL_VERSION = 765;
+    public static final String PROTOCOL_NAME = "1.21.4+";
+
     @Inject
-    public Velocity(Logger logger, ProxyServer proxyServer) {
+    public VelocityPlugin(Logger logger, ProxyServer proxyServer) {
         this.logger = logger;
         this.proxyServer = proxyServer;
 
@@ -39,7 +48,12 @@ public class Velocity {
         proxyServer.getEventManager().register(this, new PlayerListener());
 
         logger.info("Registering commands...");
-        proxyServer.getCommandManager().register("hub", new HubCmd(), "lobby");
+
+        CommandMeta lobbyCmdMeta = proxyServer.getCommandManager().metaBuilder("lobby")
+                        .aliases("hub")
+                                .plugin(INSTANCE)
+                                        .build();
+        proxyServer.getCommandManager().register(lobbyCmdMeta, new HubCmd());
 
         logger.info("Plugin loaded.");
     }

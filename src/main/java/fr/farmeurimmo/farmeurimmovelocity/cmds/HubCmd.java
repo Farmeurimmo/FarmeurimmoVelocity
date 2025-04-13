@@ -3,7 +3,7 @@ package fr.farmeurimmo.farmeurimmovelocity.cmds;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import fr.farmeurimmo.farmeurimmovelocity.Velocity;
+import fr.farmeurimmo.farmeurimmovelocity.VelocityPlugin;
 import net.kyori.adventure.text.Component;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class HubCmd implements SimpleCommand {
             invocation.source().sendMessage(Component.text("§cYou must be a player to execute this command."));
             return;
         }
-        RegisteredServer hub = Velocity.INSTANCE.getAHub();
+        RegisteredServer hub = VelocityPlugin.INSTANCE.getAHub();
         if (hub == null) {
             p.sendMessage(Component.text("§cNo hub found."));
             return;
